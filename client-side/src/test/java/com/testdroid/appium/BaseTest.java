@@ -19,8 +19,8 @@ import java.util.Properties;
 import java.util.Set;
 
 public abstract class BaseTest {
-    private static final String LOCAL_APPIUM_ADDRESS = "http://localhost:4723";
-    private static final String TESTDROID_SERVER = "https://appium.bitbar.com";
+    private static final String LOCAL_APPIUM_ADDRESS = System.getProperty("appuim.server.url","http://localhost:4723");
+    private static final String TESTDROID_SERVER = System.getProperty("bitbar.appuim.host.url", "http://mv.appium.testdroid.com:8083");
     private static final String serverSideTypeDefinition = "serverside";
     private static final String clientSideTypeDefinition = "clientside";
     protected AppiumDriver<MobileElement> wd;
