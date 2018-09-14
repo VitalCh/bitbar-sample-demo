@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public abstract class BaseTest {
+	private static final String PROPS_EXTERNAL_PROP_NAME = "appium.externa.capability.file"; 
     private static final String LOCAL_APPIUM_ADDRESS = System.getProperty("appuim.server.url","http://localhost:4723");
     private static final String TESTDROID_SERVER = System.getProperty("bitbar.appuim.host.url", "http://mv.appium.testdroid.com:8083");
     private static final String serverSideTypeDefinition = "serverside";
@@ -99,6 +101,30 @@ public abstract class BaseTest {
             }
             properties.load(input);
 
+            // check if additional capabilities provided 
+            String external_properties = System.getProperty(PROPS_EXTERNAL_PROP_NAME, null);
+            if (external_properties != null && !external_properties.isEmpty()) {
+            	logger.info(PROPS_EXTERNAL_PROP_NAME + " properties provided. Attempt read file. Additional properties will override default value set form resource folder");
+            	File prop_file = new File(external_properties);
+            	if (!prop_file.exists()) 
+            		throw new IOException("Cannot file file " + external_properties + " provided via " + PROPS_EXTERNAL_PROP_NAME);
+            		
+            		
+            	Properties extra = new Properties();
+            	extra.load(new FileInputStream(prop_file));
+            	for (Object key : extra.keySet()) {
+					if (key == null || extra.get(key) == null && !extra.get(key).toString().isEmpty())
+						continue;
+						
+					
+					if (properties.contains(key))
+						logger.warn("Default capability " + key + " value " + properties.getProperty(key.toString()) + " will be ovewritten with " + extra.get(key).toString());
+					else
+						logger.info("Setting capability " + key + " to " +  extra.get(key).toString() + " from external property file");
+					
+					properties.setProperty(key.toString(), extra.get(key).toString());
+            	}
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
