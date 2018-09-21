@@ -62,6 +62,7 @@ public abstract class BaseTest {
             logger.debug("Setting server side specific capabilities... FINISHED");
         }
         logger.debug("Creating Appium session, this may take couple minutes..");
+        logger.debug("Capabilities:" + capabilities.asMap().toString());
         setAppiumDriver();
     }
 
